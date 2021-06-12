@@ -47,7 +47,6 @@ class MyCanvasView(context: Context) : View(context) {
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
         super.onSizeChanged(width, height, oldWidth, oldHeight)
-        Log.d("ggg", "onSizeChanged")
         // Every time the function executes, a new bitmap and canvas are created.
         // To avoid memory leaks, we need to recycle extraBitmap before creating a new one
         if (::extraBitmap.isInitialized) extraBitmap.recycle()
@@ -76,7 +75,7 @@ class MyCanvasView(context: Context) : View(context) {
     }
 
     private fun touchUp() {
-        TODO("Not yet implemented")
+        path.reset()
     }
 
     private fun touchMove() {
@@ -87,13 +86,15 @@ class MyCanvasView(context: Context) : View(context) {
         // quadTo() adds a bezier between 3 points: starting point, control point and end point.
         // x1, y1 coordinates are for control point and  x2, y2 for end point.
         if(dx > touchTolerance || dy > touchTolerance){
+            // Trying out different parameters to understand how this works
             path.quadTo(currentX, currentY, (motionTouchEventX + currentX) / 2, (motionTouchEventY + currentY) / 2)
+            //path.quadTo((motionTouchEventX + currentX) / 2, (motionTouchEventY + currentY) / 2, motionTouchEventX, motionTouchEventY)
             currentX = motionTouchEventX
             currentY = motionTouchEventY
             // Draw the path in the extra bitmap to cache it
             extraCanvas.drawPath(path, paint)
         }
-        // call invalidate() to eventually call onDraw() and redraw the viewimplement
+        // call invalidate() to eventually call onDraw() and redraw the view
         invalidate()
     }
 
