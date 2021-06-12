@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 
@@ -14,6 +16,8 @@ class MyCanvasView(context: Context) : View(context) {
 
     private lateinit var extraCanvas: Canvas
     private lateinit var extraBitmap: Bitmap
+    private var motionTouchEventX = 0f
+    private var motionTouchEventY = 0f
 
     private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorBackground, null)
     private val drawColor = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
@@ -31,6 +35,8 @@ class MyCanvasView(context: Context) : View(context) {
         strokeWidth = STROKE_WIDTH // default: Hairline-width (really thin)
     }
 
+    private var path = Path()
+
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
         super.onSizeChanged(width, height, oldWidth, oldHeight)
         Log.d("ggg", "onSizeChanged")
@@ -44,8 +50,32 @@ class MyCanvasView(context: Context) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         // Starts drawing from the top left corner of the screen
         canvas.drawBitmap(extraBitmap, 0f, 0f, null)
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        // Get the coordinates of the current touch event
+        motionTouchEventX = event.x
+        motionTouchEventY = event.y
+
+        when(event.action){
+            MotionEvent.ACTION_DOWN -> touchStart()
+            MotionEvent.ACTION_MOVE -> touchMove()
+            MotionEvent.ACTION_UP -> touchUp()
+        }
+        return true
+    }
+
+    private fun touchUp() {
+        TODO("Not yet implemented")
+    }
+
+    private fun touchMove() {
+        TODO("Not yet implemented")
+    }
+
+    private fun touchStart() {
+        TODO("Not yet implemented")
     }
 }
