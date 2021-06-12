@@ -8,7 +8,9 @@ import android.graphics.Path
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import androidx.core.content.res.ResourcesCompat
+import kotlin.math.abs
 
 private const val STROKE_WIDTH = 12f
 
@@ -16,11 +18,17 @@ class MyCanvasView(context: Context) : View(context) {
 
     private lateinit var extraCanvas: Canvas
     private lateinit var extraBitmap: Bitmap
+
     private var motionTouchEventX = 0f
     private var motionTouchEventY = 0f
+    private var currentX = 0f
+    private var currentY = 0f
 
     private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorBackground, null)
     private val drawColor = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
+
+    // Distance in pixels a touch can wander before we think the user is scrolling
+    private val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop
 
     // Set up the paint with which to draw.
     private val paint = Paint().apply {
@@ -72,10 +80,28 @@ class MyCanvasView(context: Context) : View(context) {
     }
 
     private fun touchMove() {
-        TODO("Not yet implemented")
+        // Calculate traveled distance
+        val dx = abs(motionTouchEventX - currentX)
+        val dy = abs(motionTouchEventY - currentY)
+
+        // quadTo() adds a bezier between 3 points: starting point, control point and end point.
+        // x1, y1 coordinates are for control point and  x2, y2 for end point.
+        if(dx > touchTolerance || dy > touchTolerance){
+            path.quadTo(currentX, currentY, (motionTouchEventX + currentX) / 2, (motionTouchEventY + currentY) / 2)
+            currentX = motionTouchEventX
+            currentY = motionTouchEventY
+            // Draw the path in the extra bitmap to cache it
+            extraCanvas.drawPath(path, paint)
+        }
+        // call invalidate() to eventually call onDraw() and redraw the viewimplement
+        invalidate()
     }
 
     private fun touchStart() {
-        TODO("Not yet implemented")
+        path.reset()
+        // Move to the starting point and update the current coordinates with this point
+        path.moveTo(motionTouchEventX, motionTouchEventY)
+        currentX = motionTouchEventX
+        currentY = motionTouchEventY
     }
 }
